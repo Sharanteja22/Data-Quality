@@ -1,0 +1,145 @@
+
+{
+  "ruleset_version": "1.0",
+
+  "dimension_weights": {
+    "COMPLETENESS": 25,
+    "VALIDITY": 25,
+    "UNIQUENESS": 20,
+    "CONSISTENCY": 20,
+    "TIMELINESS": 10
+  },
+
+  "blocking_severities": [
+    "CRITICAL",
+    "HIGH"
+  ],
+
+  "thresholds": {
+    "PASS": 95,
+    "WARN": 90
+  },
+
+  "rules": [
+    {
+      "rule_id": "DQ001",
+      "rule_name": "Customer ID not null",
+      "dimension": "COMPLETENESS",
+      "severity": "HIGH",
+      "rule_weight": 60,
+      "is_blocking": true,
+      "owner": "Customer Data Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ002",
+      "rule_name": "Account ID not null",
+      "dimension": "COMPLETENESS",
+      "severity": "HIGH",
+      "rule_weight": 40,
+      "is_blocking": true,
+      "owner": "Account Data Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ003",
+      "rule_name": "Amount numeric and positive",
+      "dimension": "VALIDITY",
+      "severity": "CRITICAL",
+      "rule_weight": 50,
+      "is_blocking": true,
+      "owner": "Transaction Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ004",
+      "rule_name": "Currency supported",
+      "dimension": "VALIDITY",
+      "severity": "HIGH",
+      "rule_weight": 30,
+      "is_blocking": true,
+      "owner": "Reference Data Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ005",
+      "rule_name": "Transaction type allowed",
+      "dimension": "VALIDITY",
+      "severity": "MEDIUM",
+      "rule_weight": 20,
+      "is_blocking": false,
+      "owner": "Transaction Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ006",
+      "rule_name": "Transaction ID unique in batch",
+      "dimension": "UNIQUENESS",
+      "severity": "CRITICAL",
+      "rule_weight": 100,
+      "is_blocking": true,
+      "owner": "Transaction Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ007",
+      "rule_name": "Country currency consistent",
+      "dimension": "CONSISTENCY",
+      "severity": "MEDIUM",
+      "rule_weight": 70,
+      "is_blocking": false,
+      "owner": "Reference Data Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ008",
+      "rule_name": "Transaction date less than or equal to created at",
+      "dimension": "CONSISTENCY",
+      "severity": "HIGH",
+      "rule_weight": 30,
+      "is_blocking": true,
+      "owner": "Transaction Team",
+      "is_active": true,
+      "rule_type": "RECORD"
+    },
+    {
+      "rule_id": "DQ009",
+      "rule_name": "Batch received within SLA",
+      "dimension": "TIMELINESS",
+      "severity": "HIGH",
+      "rule_weight": 100,
+      "is_blocking": true,
+      "owner": "Operations Team",
+      "is_active": true,
+      "rule_type": "BATCH"
+    }
+  ],
+
+  "parameters": {
+    "allowed_currencies": [
+      "INR",
+      "USD",
+      "EUR"
+    ],
+
+    "allowed_transaction_types": [
+      "CREDIT",
+      "DEBIT"
+    ],
+
+    "country_currency_map": {
+      "India": "INR",
+      "USA": "USD",
+      "UK": "EUR"
+    },
+
+    "sla_tolerance_minutes": 60
+  }
+}
