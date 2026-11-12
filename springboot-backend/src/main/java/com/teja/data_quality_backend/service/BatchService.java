@@ -400,7 +400,7 @@ public class BatchService {
                 .substring(0, 5)
                 .toUpperCase();
 
-        return "BATCH-" + date + "-" + uniqueId;
+        return "BAT-" + date + "-" + uniqueId;
     }
 
 

@@ -1,71 +1,42 @@
-# Data Quality Frontend
+# Data Quality Frontend — Authenticated UI
 
-Responsive React + Vite frontend starter for the Operational Data Quality Scorecard.
+Responsive React + Vite application for the Operational Data Quality Scorecard.
 
 ## Stack
-- React 18 + Vite
-- Tailwind CSS 3
-- shadcn/ui-inspired local primitives (Button, Card, Badge, Input)
-- Lucide icons
-- Recharts
-- Axios + React Router
+React 18, Vite, Tailwind CSS 3, shadcn/ui-inspired local primitives, Lucide, Recharts, Axios, React Router.
 
-The components are intentionally lightweight and locally owned. They follow the shadcn/ui composition style without adding a large component framework.
-
-## Run locally
-
-Requirements: Node.js 20+ and npm.
-
-```bash
+## Run
+Requirements: Node.js 20+.
+```powershell
 npm install
-cp .env.example .env
+Copy-Item .env.example .env
 npm run dev
 ```
+Open http://localhost:5173. Run Spring Boot separately on port 8080.
 
-On Windows PowerShell, use:
+Vite proxies `/api` to `http://localhost:8080`.
 
-```powershell
-Copy-Item .env.example .env
-```
+## Authentication contract
+- `POST /api/auth/login` body `{ "email": "...", "password": "..." }`
+- `POST /api/auth/register` body `{ "fullName": "...", "email": "...", "password": "..." }`
+- `GET /api/auth/me` with `Authorization: Bearer <accessToken>`
+- Login/register response contains `accessToken`, `tokenType`, `expiresIn`, and `user` (`userId`, `fullName`, `email`, `role`).
+- Current-user response contains `user_id`, `full_name`, `email`, `role`.
 
-Open http://localhost:5173.
+The frontend stores the JWT in sessionStorage for this initial local application. The backend remains responsible for authorization. Role-aware navigation is only a user-experience layer.
 
-The Vite development server proxies `/api` requests to `http://localhost:8080`. Start the Spring Boot backend separately.
+## Role navigation
+- ADMIN: all available pages
+- OPERATOR: overview, batches, upload
+- ANALYST: overview, batches
+- STEWARD: overview, batches, exceptions
 
-## Backend endpoints used
+## Important
+The frontend does not implement DQ rules or publication decisions. Those remain in Spring Boot/Python. It never connects directly to Snowflake or AWS. Demo chart trends are marked illustrative until analytical APIs/views are connected.
 
-- `GET /api/health`
-- `GET /api/batches`
-- `GET /api/batches/{batchId}`
-- `POST /api/batches/upload` (multipart field: `file`)
-- `GET /api/runs/{runId}/scorecard`
-- `GET /api/runs/{runId}/rule-results`
-- `GET /api/runs/{runId}/exceptions`
-- `PATCH /api/exceptions/{exceptionId}`
 
-The dashboard and batch list attempt to load live API data. If the backend is unavailable or returns a different response shape, the UI shows a clear connection/error state and uses sample dashboard values only for the visual overview. Upload requires the backend to be running.
-
-## Project structure
-
-```text
-src/
-  api/                 Axios client and API functions
-  components/
-    layout/            Sidebar, top bar, app shell
-    ui/                Small shadcn-style primitives
-  data/                Dashboard sample data
-  pages/               Dashboard, batches, upload, exceptions
-  App.jsx
-  index.css
-  main.jsx
-```
-
-## Theme
-
-- Primary: Deep navy `#1E3A8A`
-- Surfaces: `#F8FAFC`, `#E2E8F0`
-- Accent: Electric blue `#3B82F6`
-
-## Notes
-
-This is a frontend starter, not a replacement for backend validation or publication controls. All data-quality decisions must remain in Spring Boot/Python. Do not put Snowflake or AWS credentials in the frontend. The browser should call Spring Boot APIs only.
+## Batch scorecard and exception management
+- Open a batch from the Batches table to view batch metadata and processing run history.
+- Select a run to load its scorecard, five dimension scores, rule results, publication eligibility, and exceptions.
+- Exception management supports search/filtering and editing status, assigned team, and resolution notes.
+- The UI reads the backend response envelopes used by the API (`batch` + `runs`, and `value` + `Count`).

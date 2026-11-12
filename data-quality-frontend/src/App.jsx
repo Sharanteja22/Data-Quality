@@ -1,22 +1,3 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import AppShell from "./components/layout/AppShell";
-import Dashboard from "./pages/Dashboard";
-import Batches from "./pages/Batches";
-import UploadBatch from "./pages/UploadBatch";
-import Exceptions from "./pages/Exceptions";
-import NotFound from "./pages/NotFound";
-
-export default function App() {
-  return (
-    <AppShell>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/batches" element={<Batches />} />
-        <Route path="/upload" element={<UploadBatch />} />
-        <Route path="/exceptions" element={<Exceptions />} />
-        <Route path="/runs" element={<Navigate to="/batches" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AppShell>
-  );
-}
+import {Navigate,Route,Routes} from "react-router-dom";import {useAuth} from "./auth/AuthContext";import ProtectedRoute from "./components/auth/ProtectedRoute";import AppShell from "./components/layout/AppShell";import Login from "./pages/Login";import Register from "./pages/Register";import Dashboard from "./pages/Dashboard";import Batches from "./pages/Batches";import BatchDetails from "./pages/BatchDetails";import Upload from "./pages/Upload";import Exceptions from "./pages/Exceptions";
+function Page({children,roles}){return <ProtectedRoute roles={roles}><AppShell>{children}</AppShell></ProtectedRoute>}
+export default function App(){const {user}=useAuth();return <Routes><Route path="/login" element={user?<Navigate to="/" replace/>:<Login/>}/><Route path="/register" element={user?<Navigate to="/" replace/>:<Register/>}/><Route path="/" element={<Page><Dashboard/></Page>}/><Route path="/batches" element={<Page><Batches/></Page>}/><Route path="/batches/:batchId" element={<Page><BatchDetails/></Page>}/><Route path="/upload" element={<Page roles={["ADMIN","OPERATOR"]}><Upload/></Page>}/><Route path="/exceptions" element={<Page roles={["ADMIN","STEWARD"]}><Exceptions/></Page>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes>}

@@ -311,6 +311,19 @@ public class BatchRepository {
 
     public void insertDQExceptions(List<DQException> exceptions) {
 
+        // String sql = """
+        //     INSERT INTO DQ_EXCEPTIONS (
+        //         EXCEPTION_ID,
+        //         'EXC-' || UPPER(SUBSTR(REPLACE(EXCEPTION_ID, '-', ''), 1, 12)) AS DISPLAY_EXCEPTION_ID,
+        //         RUN_ID,
+        //         RULE_ID,
+        //         RECORD_ID,
+        //         SEVERITY,
+        //         DESCRIPTION,
+        //         ASSIGNED_TO
+        //     )
+        //     VALUES (?, ?, ?, ?, ?, ?, ?)
+        //     """;
         String sql = """
             INSERT INTO DQ_EXCEPTIONS (
                 EXCEPTION_ID,
@@ -323,7 +336,6 @@ public class BatchRepository {
             )
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """;
-
         jdbcTemplate.batchUpdate(
             sql,
             exceptions,
@@ -448,7 +460,8 @@ public class BatchRepository {
 public List<Map<String, Object>> getAllBatches() {
 
     String sql = """
-        SELECT *
+        SELECT *,
+               REPLACE(BATCH_ID, 'BATCH-', 'BAT-') AS DISPLAY_BATCH_ID
         FROM BATCHES
         ORDER BY RECEIVED_AT DESC
         """;
@@ -459,7 +472,8 @@ public List<Map<String, Object>> getAllBatches() {
     public Map<String, Object> getBatchById(String batchId) {
 
         String sql = """
-            SELECT *
+            SELECT *,
+                   REPLACE(BATCH_ID, 'BATCH-', 'BAT-') AS DISPLAY_BATCH_ID
             FROM BATCHES
             WHERE BATCH_ID = ?
             """;
@@ -556,6 +570,7 @@ public List<Map<String, Object>> getAllBatches() {
         String sql = """
             SELECT
                 EXCEPTION_ID,
+                'EXC-' || UPPER(SUBSTR(REPLACE(EXCEPTION_ID, '-', ''), 1, 12)) AS DISPLAY_EXCEPTION_ID,
                 RUN_ID,
                 RULE_ID,
                 RECORD_ID,

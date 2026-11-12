@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,6 +34,15 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(status).body(error);
+    }
+
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> handleBadCredentials(
+            BadCredentialsException ex,
+            HttpServletRequest request
+    ) {
+        return buildError(HttpStatus.UNAUTHORIZED, "Invalid email or password.", request);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
